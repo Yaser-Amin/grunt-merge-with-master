@@ -1,4 +1,4 @@
-# grunt-merge-with-master 1.0.0
+# grunt-merge-with-master 1.0.3
 > Merge JSON files with master file
 
 
