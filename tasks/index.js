@@ -8,15 +8,15 @@
 
 'use strict';
 
-module.exports = function(grunt) {
+module.exports = function (grunt) {
   var path = require('path');
   var fs = require('fs');
   var chalk = require('chalk');
   var fileSyncCmp = require('file-sync-cmp');
   var isWindows = process.platform === 'win32';
-  var _ = require('lodash');
+  var deepMerge = require('deepmerge');
 
-  grunt.registerMultiTask('masterMerge', 'Merge JSON files with master JSON file', function() {
+  grunt.registerMultiTask('masterMerge', 'Merge JSON files with master JSON file', function () {
 
     var options = this.options({
       encoding: grunt.file.defaultEncoding,
@@ -32,7 +32,7 @@ module.exports = function(grunt) {
       noProcess: options.noProcess || options.processContentExclude
     };
 
-    var detectDestType = function(dest) {
+    var detectDestType = function (dest) {
       if (grunt.util._.endsWith(dest, '/')) {
         return 'directory';
       } else {
@@ -40,7 +40,7 @@ module.exports = function(grunt) {
       }
     };
 
-    var unixifyPath = function(filepath) {
+    var unixifyPath = function (filepath) {
       if (isWindows) {
         return filepath.replace(/\\/g, '/');
       } else {
@@ -48,21 +48,13 @@ module.exports = function(grunt) {
       }
     };
 
-    /*var syncTimestamp = function (src, dest) {
-      var stat = fs.lstatSync(src);
-      if (path.basename(src) !== path.basename(dest)) {
-        return;
-      }
-
-      if (stat.isFile() && !fileSyncCmp.equalFiles(src, dest)) {
-        return;
-      }
-
-      var fd = fs.openSync(dest, isWindows ? 'r+' : 'r');
-      fs.futimesSync(fd, stat.atime, stat.mtime);
-      fs.closeSync(fd);
-    };*/
-
+    var concatMerge = function (destinationArray, sourceArray, options) {
+      destinationArray 
+      sourceArray 
+      options // => { arrayMerge: concatMerge }
+      return destinationArray.concat(sourceArray)
+    }
+    
     var isExpandedPair;
     var dirs = {};
     var tally = {
@@ -70,10 +62,10 @@ module.exports = function(grunt) {
       files: 0
     };
 
-    this.files.forEach(function(filePair) {
+    this.files.forEach(function (filePair) {
       isExpandedPair = filePair.orig.expand || false;
 
-      filePair.src.forEach(function(src) {
+      filePair.src.forEach(function (src) {
         src = unixifyPath(src);
         var dest = unixifyPath(filePair.dest);
 
@@ -97,9 +89,8 @@ module.exports = function(grunt) {
           grunt.verbose.writeln('Merging ' + chalk.cyan(src) + ' -> ' + chalk.cyan(dest));
           const masterCoontent = JSON.parse(fs.readFileSync(filePair.master));
           const fileContent = JSON.parse(fs.readFileSync(src));
-          _.merge(masterCoontent, fileContent);
-          grunt.file.write(dest, JSON.stringify(masterCoontent));
-          //syncTimestamp(src, dest);
+          let content = deepMerge(masterCoontent, fileContent, { arrayMerge: concatMerge });
+          grunt.file.write(dest, JSON.stringify(content));          
           if (options.mode !== false) {
             fs.chmodSync(dest, (options.mode === true) ? fs.lstatSync(src).mode : options.mode);
           }
@@ -107,14 +98,6 @@ module.exports = function(grunt) {
         }
       });
     });
-
-    /*if (options.timestamp) {
-      Object.keys(dirs).sort(function (a, b) {
-        return b.length - a.length;
-      }).forEach(function (dest) {
-        syncTimestamp(dirs[dest], dest);
-      });
-    }*/
 
     if (tally.dirs) {
       grunt.log.write('Created ' + chalk.cyan(tally.dirs.toString()) + (tally.dirs === 1 ? ' directory' : ' directories'));
