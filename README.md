@@ -17,7 +17,7 @@ grunt.loadNpmTasks('grunt-merge-with-master');
 ```
 
 
-## Uglify task
+## Merge task
 _Run this task with the `grunt mergeMaster` command._
 
 Task targets, files and options may be specified according to the grunt [Configuring tasks](http://gruntjs.com/configuring-tasks) guide.
