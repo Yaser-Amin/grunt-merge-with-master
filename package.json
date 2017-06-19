@@ -1,6 +1,6 @@
 {
   "name": "grunt-merge-with-master",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "",
   "main": "./tasks/index.js",
   "scripts": {
@@ -15,5 +15,11 @@
   "bugs": {
     "url": "https://github.com/Yaser-Amin/grunt-merge-with-master/issues"
   },
-  "homepage": "https://github.com/Yaser-Amin/grunt-merge-with-master#readme"
+  "homepage": "https://github.com/Yaser-Amin/grunt-merge-with-master#readme",
+  "devDependencies": {
+    "file-sync-cmp": "^0.1.1"
+  },
+  "dependencies": {
+    "deepmerge": "^1.4.4"
+  }
 }
